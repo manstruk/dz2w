@@ -1,0 +1,91 @@
+#include <iostream>
+using namespace std;
+
+class Drib {
+private:
+    int ch;
+    int zn;
+
+    int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+
+    void simplify() {
+        int d = gcd(abs(ch), abs(zn));
+        ch /= d;
+        zn /= d;
+        if (zn < 0) {
+            ch = -ch;
+            zn = -zn;
+        }
+    }
+
+public:
+    Drib() {
+        ch = 0;
+        zn = 1;
+    }
+
+    void vvesty() {
+        cout << "Введіть чисельник: ";
+        cin >> ch;
+        cout << "Введіть знаменник (не 0): ";
+        cin >> zn;
+        if (zn == 0) {
+            cout << "Знаменник не може бути 0! Встановлено 1.\n";
+            zn = 1;
+        }
+        simplify();
+    }
+
+    void pokazaty() const {
+        cout << ch << "/" << zn << endl;
+    }
+
+    Drib dodaty(const Drib& d) const {
+        Drib res;
+        res.ch = ch * d.zn + d.ch * zn;
+        res.zn = zn * d.zn;
+        res.simplify();
+        return res;
+    }
+
+    Drib vidnyaty(const Drib& d) const {
+        Drib res;
+        res.ch = ch * d.zn - d.ch * zn;
+        res.zn = zn * d.zn;
+        res.simplify();
+        return res;
+    }
+
+    Drib mnozhyty(const Drib& d) const {
+        Drib res;
+        res.ch = ch * d.ch;
+        res.zn = zn * d.zn;
+        res.simplify();
+        return res;
+    }
+
+    Drib dilyty(const Drib& d) const {
+        Drib res;
+        res.ch = ch * d.zn;
+        res.zn = zn * d.ch;
+        if (res.zn == 0) {
+            cout << "Помилка: ділення на нуль!\n";
+            res.ch = 0;
+            res.zn = 1;
+        } else {
+            res.simplify();
+        }
+        return res;
+    }
+};
+
+int main() {
+    Drib a, b, suma, rizn, dob, chastka;
+
+    cout << "Введення першого дробу:\n";
+    a.vvesty();
+
+    cout << "Введення другого дробу:\n";
+    b.vvesty();
