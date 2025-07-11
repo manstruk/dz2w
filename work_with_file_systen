@@ -1,0 +1,121 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <cctype>
+using namespace std;
+
+const int MAX = 1024;
+
+void porivnyaty(const char* f1name, const char* f2name) {
+    ifstream f1(f1name), f2(f2name);
+    char l1[MAX], l2[MAX];
+    int n = 1;
+    bool ok = true;
+
+    while (f1.getline(l1, MAX) && f2.getline(l2, MAX)) {
+        if (strcmp(l1, l2) != 0) {
+            cout << "Рядок " << n << " не співпав\n";
+            cout << "Файл 1: " << l1 << "\n";
+            cout << "Файл 2: " << l2 << "\n";
+            ok = false;
+        }
+        n++;
+    }
+
+    while (f1.getline(l1, MAX)) {
+        cout << "Додатковий у 1: " << l1 << "\n";
+        ok = false;
+    }
+    while (f2.getline(l2, MAX)) {
+        cout << "Додатковий у 2: " << l2 << "\n";
+        ok = false;
+    }
+
+    if (ok) cout << "Усі рядки однакові\n";
+}
+
+bool hlos(char c) {
+    c = tolower(c);
+    const char* g = "аеєиіїоуяю";
+    for (int i = 0; g[i]; i++) if (c == g[i]) return true;
+    return false;
+}
+
+void stat(const char* in, const char* out) {
+    ifstream f(in);
+    ofstream o(out);
+    char l[MAX];
+    int s = 0, r = 0, g = 0, p = 0, d = 0;
+
+    while (f.getline(l, MAX)) {
+        r++;
+        for (int i = 0; l[i]; i++) {
+            char c = l[i];
+            if (isalpha(c)) hlos(c) ? g++ : p++;
+            else if (isdigit(c)) d++;
+            s++;
+        }
+        s++;
+    }
+
+    o << "Символи: " << s << "\n";
+    o << "Рядки: " << r << "\n";
+    o << "Голосні: " << g << "\n";
+    o << "Приголосні: " << p << "\n";
+    o << "Цифри: " << d << "\n";
+}
+
+char sh(char c, int k) {
+    if (isalpha(c)) {
+        char a = isupper(c) ? 'A' : 'a';
+        return (c - a + k + 26) % 26 + a;
+    }
+    return c;
+}
+
+void cezar(const char* in, const char* out, int k) {
+    ifstream f(in);
+    ofstream o(out);
+    char l[MAX];
+
+    while (f.getline(l, MAX)) {
+        for (int i = 0; l[i]; i++) l[i] = sh(l[i], k);
+        o << l << "\n";
+    }
+}
+
+int main() {
+    int x;
+    char f1[100], f2[100];
+    int k;
+
+    do {
+        cout << "\n1. Порівняти файли\n";
+        cout << "2. Статистика файлу\n";
+        cout << "3. Шифр Цезаря\n";
+        cout << "4. Вихід\n";
+        cout << ">> ";
+        cin >> x;
+
+        switch (x) {
+            case 1:
+                cout << "Файл 1: "; cin >> f1;
+                cout << "Файл 2: "; cin >> f2;
+                porivnyaty(f1, f2);
+                break;
+            case 2:
+                cout << "Вхідний файл: "; cin >> f1;
+                cout << "Вихідний файл: "; cin >> f2;
+                stat(f1, f2);
+                break;
+            case 3:
+                cout << "Вхідний файл: "; cin >> f1;
+                cout << "Вихідний файл: "; cin >> f2;
+                cout << "Ключ: "; cin >> k;
+                cezar(f1, f2, k);
+                break;
+        }
+    } while (x != 4);
+
+    return 0;
+}
