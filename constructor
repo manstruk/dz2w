@@ -1,0 +1,122 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Studentik {
+private:
+    string imya;
+    int rik;
+
+public:
+    Studentik() : imya("Nevdomyi"), rik(0) {}
+
+    Studentik(string i, int r) : imya(i), rik(r) {}
+
+    string viddyImya() const {
+        return imya;
+    }
+
+    int viddyRik() const {
+        return rik;
+    }
+
+    void pokazhiSebya() const {
+        cout << "Imya: " << imya << ", Vik: " << rik << endl;
+    }
+};
+
+class Gruponka {
+private:
+    string nazvaGruponky;
+    vector<Studentik> studentikiList;
+
+public:
+    Gruponka(string nazva) {
+        nazvaGruponky = nazva;
+    }
+
+    void dobavStudentika(const Studentik& s) {
+        studentikiList.push_back(s);
+    }
+
+    void vykinStudentika(string imya) {
+        for (auto it = studentikiList.begin(); it != studentikiList.end(); ++it) {
+            if (it->viddyImya() == imya) {
+                studentikiList.erase(it);
+                return;
+            }
+        }
+    }
+
+    void pokazhiVsikh() const {
+        cout << "Gruponka: " << nazvaGruponky << endl;
+        for (const auto& s : studentikiList) {
+            s.pokazhiSebya();
+        }
+    }
+};
+
+void menu() {
+    cout << "\n1. Nova Gruponka\n";
+    cout << "2. Dodaty Studentika\n";
+    cout << "3. Vydalyty Studentika\n";
+    cout << "4. Pokazaty Usikh\n";
+    cout << "5. Vykhid\n";
+    cout << "Vash vibor: ";
+}
+
+int main() {
+    Gruponka* moyaGruponka = nullptr;
+    int vybir;
+    string tempImya;
+    int tempRik;
+
+    do {
+        menu();
+        cin >> vybir;
+        cin.ignore();
+
+        switch (vybir) {
+            case 1:
+                cout << "Nazva Gruponky: ";
+                getline(cin, tempImya);
+                delete moyaGruponka;
+                moyaGruponka = new Gruponka(tempImya);
+                break;
+
+            case 2:
+                if (moyaGruponka == nullptr) break;
+                cout << "Imya Studentika: ";
+                getline(cin, tempImya);
+                cout << "Vik: ";
+                cin >> tempRik;
+                cin.ignore();
+                moyaGruponka->dobavStudentika(Studentik(tempImya, tempRik));
+                break;
+
+            case 3:
+                if (moyaGruponka == nullptr) break;
+                cout << "Imya dlya vydalennya: ";
+                getline(cin, tempImya);
+                moyaGruponka->vykinStudentika(tempImya);
+                break;
+
+            case 4:
+                if (moyaGruponka == nullptr) break;
+                moyaGruponka->pokazhiVsikh();
+                break;
+
+            case 5:
+                break;
+
+            default:
+                break;
+        }
+
+    } while (vybir != 5);
+
+    delete moyaGruponka;
+    return 0;
+}
