@@ -1,0 +1,137 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct Komplex {
+    double a, b;
+};
+
+Komplex dod(Komplex x, Komplex y) {
+    Komplex r; r.a = x.a + y.a; r.b = x.b + y.b; return r;
+}
+Komplex riz(Komplex x, Komplex y) {
+    Komplex r; r.a = x.a - y.a; r.b = x.b - y.b; return r;
+}
+Komplex mn(Komplex x, Komplex y) {
+    Komplex r;
+    r.a = x.a * y.a - x.b * y.b;
+    r.b = x.a * y.b + x.b * y.a;
+    return r;
+}
+Komplex dil(Komplex x, Komplex y) {
+    Komplex r;
+    double d = y.a * y.a + y.b * y.b;
+    r.a = (x.a * y.a + x.b * y.b) / d;
+    r.b = (x.b * y.a - x.a * y.b) / d;
+    return r;
+}
+
+struct Kar {
+    float d, h, ob, p, k;
+    char c[20], t[20];
+};
+
+void vvediKar(Kar& x) {
+    cin >> x.d >> x.h >> x.ob >> x.p >> x.k >> x.c >> x.t;
+}
+void pokKar(Kar x) {
+    cout << x.d << " " << x.h << " " << x.ob << " " << x.p << " " << x.k << " " << x.c << " " << x.t << endl;
+}
+void poshukKar(Kar a[], int n, const char* kolir) {
+    for (int i = 0; i < n; i++) if (strcmp(a[i].c, kolir) == 0) pokKar(a[i]);
+}
+
+struct Book {
+    char name[50], avtor[50], vydav[50], zhanr[20];
+};
+
+void redBook(Book& x) {
+    cin >> x.name >> x.avtor >> x.vydav >> x.zhanr;
+}
+void showBook(Book x) {
+    cout << x.name << " " << x.avtor << " " << x.vydav << " " << x.zhanr << endl;
+}
+void allBooks(Book a[], int n) {
+    for (int i = 0; i < n; i++) showBook(a[i]);
+}
+void findAvtor(Book a[], int n, const char* av) {
+    for (int i = 0; i < n; i++) if (strcmp(a[i].avtor, av) == 0) showBook(a[i]);
+}
+void findName(Book a[], int n, const char* nazv) {
+    for (int i = 0; i < n; i++) if (strcmp(a[i].name, nazv) == 0) showBook(a[i]);
+}
+void sortName(Book a[], int n) {
+    for (int i = 0; i < n-1; i++)
+        for (int j = i+1; j < n; j++)
+            if (strcmp(a[i].name, a[j].name) > 0) swap(a[i], a[j]);
+}
+void sortAvtor(Book a[], int n) {
+    for (int i = 0; i < n-1; i++)
+        for (int j = i+1; j < n; j++)
+            if (strcmp(a[i].avtor, a[j].avtor) > 0) swap(a[i], a[j]);
+}
+void sortVydav(Book a[], int n) {
+    for (int i = 0; i < n-1; i++)
+        for (int j = i+1; j < n; j++)
+            if (strcmp(a[i].vydav, a[j].vydav) > 0) swap(a[i], a[j]);
+}
+
+struct Mash {
+    char colir[20], model[20], nomer[9];
+};
+
+void zapMash(Mash& x) {
+    cin >> x.colir >> x.model >> x.nomer;
+}
+void showMash(Mash x) {
+    cout << x.colir << " " << x.model << " " << x.nomer << endl;
+}
+void editMash(Mash& x) {
+    zapMash(x);
+}
+void allMash(Mash a[], int n) {
+    for (int i = 0; i < n; i++) showMash(a[i]);
+}
+void findMash(Mash a[], int n, const char* num) {
+    for (int i = 0; i < n; i++) if (strcmp(a[i].nomer, num) == 0) showMash(a[i]);
+}
+
+struct Entity {
+    float speed;
+    int type;
+    char colir[20];
+    union {
+        float birdSpeed;
+        bool cowFeet;
+        int humanIQ;
+    };
+};
+
+void entIn(Entity& e) {
+    cin >> e.speed >> e.type >> e.colir;
+    if (e.type == 0) cin >> e.birdSpeed;
+    if (e.type == 1) cin >> e.cowFeet;
+    if (e.type == 2) cin >> e.humanIQ;
+}
+void entShow(Entity e) {
+    cout << e.speed << " " << e.colir << " ";
+    if (e.type == 0) cout << e.birdSpeed;
+    if (e.type == 1) cout << e.cowFeet;
+    if (e.type == 2) cout << e.humanIQ;
+    cout << endl;
+}
+void entList(Entity a[], int n) {
+    for (int i = 0; i < n; i++) entShow(a[i]);
+}
+void entEdit(Entity& e) {
+    entIn(e);
+}
+void entFind(Entity a[], int n, int val) {
+    for (int i = 0; i < n; i++)
+        if (a[i].type == 2 && a[i].humanIQ == val) entShow(a[i]);
+}
+
+int main() {
+    // для перевірки - можеш написати прості меню або тест тут вручну
+    return 0;
+}
