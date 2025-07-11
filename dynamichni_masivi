@@ -1,0 +1,203 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+int** shtuknul_v_konec(int** matrica, int& ryady, int kolonki, int* novayaStroka) {
+    int** novMat = new int*[ryady+1];
+    for(int i=0; i<ryady; i++)
+        novMat[i] = new int[kolonki];
+    novMat[ryady] = new int[kolonki];
+
+    for(int i=0; i<ryady; i++)
+        for(int j=0; j<kolonki; j++)
+            novMat[i][j] = matrica[i][j];
+
+    for(int j=0; j<kolonki; j++)
+        novMat[ryady][j] = novayaStroka[j];
+
+    for(int i=0; i<ryady; i++)
+        delete[] matrica[i];
+    delete[] matrica;
+
+    ryady++;
+    return novMat;
+}
+
+int** pihanul_v_nachalo(int** matrica, int& ryady, int kolonki, int* novayaStroka) {
+    int** novMat = new int*[ryady+1];
+    for(int i=0; i<ryady+1; i++)
+        novMat[i] = new int[kolonki];
+
+    for(int j=0; j<kolonki; j++)
+        novMat[0][j] = novayaStroka[j];
+
+    for(int i=0; i<ryady; i++)
+        for(int j=0; j<kolonki; j++)
+            novMat[i+1][j] = matrica[i][j];
+
+    for(int i=0; i<ryady; i++)
+        delete[] matrica[i];
+    delete[] matrica;
+
+    ryady++;
+    return novMat;
+}
+
+int** vtisnul_na_mesto(int** matrica, int& ryady, int kolonki, int* novayaStroka, int poziciya) {
+    if(poziciya < 0) poziciya = 0;
+    if(poziciya > ryady) poziciya = ryady;
+
+    int** novMat = new int*[ryady+1];
+    for(int i=0; i<ryady+1; i++)
+        novMat[i] = new int[kolonki];
+
+    int k=0;
+    for(int i=0; i<poziciya; i++) {
+        for(int j=0; j<kolonki; j++)
+            novMat[k][j] = matrica[i][j];
+        k++;
+    }
+
+    for(int j=0; j<kolonki; j++)
+        novMat[k][j] = novayaStroka[j];
+    k++;
+
+    for(int i=poziciya; i<ryady; i++) {
+        for(int j=0; j<kolonki; j++)
+            novMat[k][j] = matrica[i][j];
+        k++;
+    }
+
+    for(int i=0; i<ryady; i++)
+        delete[] matrica[i];
+    delete[] matrica;
+
+    ryady++;
+    return novMat;
+}
+
+int** vykinul_nulovye(int** matrica, int& ryady, int kolonki) {
+    int** novMat = new int*[ryady];
+    for(int i=0; i<ryady; i++)
+        novMat[i] = new int[kolonki];
+
+    int newRows = 0;
+    for(int i=0; i<ryady; i++) {
+        bool est_nol = false;
+        for(int j=0; j<kolonki; j++) {
+            if(matrica[i][j] == 0) {
+                est_nol = true;
+                break;
+            }
+        }
+        if(!est_nol) {
+            for(int j=0; j<kolonki; j++)
+                novMat[newRows][j] = matrica[i][j];
+            newRows++;
+        }
+    }
+
+    for(int i=0; i<ryady; i++)
+        delete[] matrica[i];
+    delete[] matrica;
+
+    ryady = newRows;
+    return novMat;
+}
+
+int** summiruyu_po_elementam(int** matrica1, int** matrica2, int ryady, int kolonki) {
+    int** rezultat = new int*[ryady];
+    for(int i=0; i<ryady; i++) {
+        rezultat[i] = new int[kolonki];
+        for(int j=0; j<kolonki; j++) {
+            rezultat[i][j] = matrica1[i][j] + matrica2[i][j];
+        }
+    }
+    return rezultat;
+}
+
+int** umnozhayu_matricy(int** A, int M, int N, int** B, int K) {
+    int** C = new int*[M];
+    for(int i=0; i<M; i++) {
+        C[i] = new int[K];
+        for(int j=0; j<K; j++) {
+            C[i][j] = 0;
+            for(int k=0; k<N; k++) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    return C;
+}
+
+int** sozdal_matricu(int ryady, int kolonki) {
+    int** matrica = new int*[ryady];
+    for(int i=0; i<ryady; i++)
+        matrica[i] = new int[kolonki];
+    return matrica;
+}
+
+void ubil_matricu(int** matrica, int ryady) {
+    for(int i=0; i<ryady; i++)
+        delete[] matrica[i];
+    delete[] matrica;
+}
+
+void zalil_randomom(int** matrica, int ryady, int kolonki, int min=0, int max=9) {
+    for(int i=0; i<ryady; i++)
+        for(int j=0; j<kolonki; j++)
+            matrica[i][j] = min + rand() % (max - min + 1);
+}
+
+void pokazi_matricu(int** matrica, int ryady, int kolonki) {
+    for(int i=0; i<ryady; i++) {
+        for(int j=0; j<kolonki; j++) {
+            cout << matrica[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+int main() {
+    srand(time(0));
+
+    // Задание 1,2,3
+    int ryady = 2, kolonki = 3;
+    int** matrica = sozdal_matricu(ryady, kolonki);
+    matrica[0][0]=1; matrica[0][1]=2; matrica[0][2]=3;
+    matrica[1][0]=4; matrica[1][1]=5; matrica[1][2]=6;
+
+    cout << "Стартовая матрица:\n";
+    pokazi_matricu(matrica, ryady, kolonki);
+
+    int novaya1[] = {7,8,9};
+    matrica = shtuknul_v_konec(matrica, ryady, kolonki, novaya1);
+    cout << "Добавил в конец:\n";
+    pokazi_matricu(matrica, ryady, kolonki);
+
+    int novaya2[] = {0,0,0};
+    matrica = pihanul_v_nachalo(matrica, ryady, kolonki, novaya2);
+    cout << "Добавил в начало:\n";
+    pokazi_matricu(matrica, ryady, kolonki);
+
+    int novaya3[] = {10,11,12};
+    matrica = vtisnul_na_mesto(matrica, ryady, kolonki, novaya3, 2);
+    cout << "Добавил в позицию 2:\n";
+    pokazi_matricu(matrica, ryady, kolonki);
+
+    // Задание 4
+    cout << "Убираем строки с нулями:\n";
+    matrica = vykinul_nulovye(matrica, ryady, kolonki);
+    pokazi_matricu(matrica, ryady, kolonki);
+
+    // Задание 5
+    int r1, c1;
+    cout << "Введи размер первого массива (ряды и колонки): ";
+    cin >> r1 >> c1;
+    int** arr1 = sozdal_matricu(r1, c1);
+    zalil_randomom(arr1, r1, c1);
+
+    int r2, c2
