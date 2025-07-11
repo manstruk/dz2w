@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define SQR(x) ((x) * (x))
+#define POW(x, n) ({ int _res = 1; for (int _i = 0; _i < (n); _i++) _res *= (x); _res; })
+#define IS_EVEN(x) ((x) % 2 == 0)
+#define IS_ODD(x) ((x) % 2 != 0)
+
+int main() {
+    int a = 5, b = 8, x = 3, n = 4;
+
+    cout << "MIN: " << MIN(a, b) << endl;
+    cout << "MAX: " << MAX(a, b) << endl;
+    cout << "SQR: " << SQR(x) << endl;
+    cout << "POW: " << POW(x, n) << endl;
+    cout << "IS_EVEN(4): " << IS_EVEN(4) << endl;
+    cout << "IS_ODD(7): " << IS_ODD(7) << endl;
+
+    return 0;
+}
