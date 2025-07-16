@@ -1,0 +1,181 @@
+#include <iostream>
+#include <cstring>
+#include <fstream>
+using namespace std;
+
+class Reservoir {
+    char* nazva;
+    double shyr, dovzh, glyb;
+    string typ;
+
+public:
+    explicit Reservoir(const char* name = "Nevdomo", double s = 0, double d = 0, double g = 0, const string& t = "Nevyznacheno") {
+        nazva = new char[strlen(name) + 1];
+        strcpy(nazva, name);
+        shyr = s;
+        dovzh = d;
+        glyb = g;
+        typ = t;
+    }
+
+    Reservoir(const Reservoir& r) {
+        nazva = new char[strlen(r.nazva) + 1];
+        strcpy(nazva, r.nazva);
+        shyr = r.shyr;
+        dovzh = r.dovzh;
+        glyb = r.glyb;
+        typ = r.typ;
+    }
+
+    Reservoir& operator=(const Reservoir& r) {
+        if (this != &r) {
+            delete[] nazva;
+            nazva = new char[strlen(r.nazva) + 1];
+            strcpy(nazva, r.nazva);
+            shyr = r.shyr;
+            dovzh = r.dovzh;
+            glyb = r.glyb;
+            typ = r.typ;
+        }
+        return *this;
+    }
+
+    ~Reservoir() {
+        delete[] nazva;
+    }
+
+    double obsyah() const {
+        return shyr * dovzh * glyb;
+    }
+
+    double plosha() const {
+        return shyr * dovzh;
+    }
+
+    bool odynTyp(const Reservoir& r) const {
+        return typ == r.typ;
+    }
+
+    int porivnyatyPloshchu(const Reservoir& r) const {
+        if (!odynTyp(r)) return -2; // не одного типу
+        if (plosha() > r.plosha()) return 1;
+        else if (plosha() < r.plosha()) return -1;
+        else return 0;
+    }
+
+    void pokazaty() const {
+        cout << "Nazva: " << nazva << ", Typ: " << typ
+             << ", Shyr: " << shyr << ", Dovzh: " << dovzh
+             << ", Glyb: " << glyb << ", Obsyah: " << obsyah()
+             << ", Plosha: " << plosha() << endl;
+    }
+
+    void zapysTekst(ostream& out) const {
+        out << nazva << " " << typ << " " << shyr << " " << dovzh << " " << glyb << endl;
+    }
+
+    void zapysBinarnyy(ofstream& out) const {
+        int len = strlen(nazva);
+        out.write((char*)&len, sizeof(len));
+        out.write(nazva, len);
+
+        len = typ.size();
+        out.write((char*)&len, sizeof(len));
+        out.write(typ.c_str(), len);
+
+        out.write((char*)&shyr, sizeof(shyr));
+        out.write((char*)&dovzh, sizeof(dovzh));
+        out.write((char*)&glyb, sizeof(glyb));
+    }
+
+    void setNazva(const char* name) {
+        delete[] nazva;
+        nazva = new char[strlen(name) + 1];
+        strcpy(nazva, name);
+    }
+
+    const char* getNazva() const { return nazva; }
+    string getTyp() const { return typ; }
+    void setTyp(const string& t) { typ = t; }
+    void setShyr(double s) { shyr = s; }
+    void setDovzh(double d) { dovzh = d; }
+    void setGlyb(double g) { glyb = g; }
+};
+
+void pokazatyMasyv(Reservoir* mas, int kilkist) {
+    for (int i = 0; i < kilkist; ++i) {
+        cout << i + 1 << ") ";
+        mas[i].pokazaty();
+    }
+}
+
+int main() {
+    const int MAX = 100;
+    Reservoir* mas = new Reservoir[MAX];
+    int kilkist = 0;
+    int vybir;
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Dodaty reservoir\n"
+             << "2. Vydalyty ostatniy\n"
+             << "3. Pokazaty vse\n"
+             << "4. Porivnyaty 2 reservoirs\n"
+             << "5. Zberehty do tekstovoho faylu\n"
+             << "6. Zberehty do binarnoho faylu\n"
+             << "0. Vykhid\n"
+             << "Vash vybir: ";
+        cin >> vybir;
+        cin.ignore();
+
+        if (vybir == 1) {
+            char name[100];
+            string typ;
+            double s, d, g;
+            cout << "Nazva: ";
+            cin.getline(name, 100);
+            cout << "Typ: ";
+            getline(cin, typ);
+            cout << "Shyr: ";
+            cin >> s;
+            cout << "Dovzh: ";
+            cin >> d;
+            cout << "Glyb: ";
+            cin >> g;
+            cin.ignore();
+            mas[kilkist++] = Reservoir(name, s, d, g, typ);
+        } else if (vybir == 2) {
+            if (kilkist > 0) --kilkist;
+        } else if (vybir == 3) {
+            pokazatyMasyv(mas, kilkist);
+        } else if (vybir == 4) {
+            int i1, i2;
+            cout << "Indeksy (1-based): ";
+            cin >> i1 >> i2;
+            if (i1 > 0 && i2 > 0 && i1 <= kilkist && i2 <= kilkist) {
+                int res = mas[i1 - 1].porivnyatyPloshchu(mas[i2 - 1]);
+                if (res == -2) cout << "Rizni typy!" << endl;
+                else if (res == 0) cout << "Ploshchi rivni" << endl;
+                else if (res == 1) cout << "Persha bilsha" << endl;
+                else cout << "Druha bilsha" << endl;
+            }
+        } else if (vybir == 5) {
+            ofstream fout("reservoirs.txt");
+            for (int i = 0; i < kilkist; ++i)
+                mas[i].zapysTekst(fout);
+            fout.close();
+            cout << "Zapisano u reservoirs.txt\n";
+        } else if (vybir == 6) {
+            ofstream fout("reservoirs.bin", ios::binary);
+            fout.write((char*)&kilkist, sizeof(kilkist));
+            for (int i = 0; i < kilkist; ++i)
+                mas[i].zapysBinarnyy(fout);
+            fout.close();
+            cout << "Zapisano u reservoirs.bin\n";
+        }
+
+    } while (vybir != 0);
+
+    delete[] mas;
+    return 0;
+}
