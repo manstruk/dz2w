@@ -1,122 +1,118 @@
 #include <iostream>
-#include <vector>
 #include <string>
 
 using namespace std;
 
-class Studentik {
-private:
-    string imya;
-    int rik;
+class Uchennyk {
+    string prizvysche;
+    int vik;
 
 public:
-    Studentik() : imya("Nevdomyi"), rik(0) {}
-
-    Studentik(string i, int r) : imya(i), rik(r) {}
-
-    string viddyImya() const {
-        return imya;
+    Uchennyk() {
+        prizvysche = "Anonim";
+        vik = 0;
     }
 
-    int viddyRik() const {
-        return rik;
+    Uchennyk(string p, int v) {
+        prizvysche = p;
+        vik = v;
     }
 
-    void pokazhiSebya() const {
-        cout << "Imya: " << imya << ", Vik: " << rik << endl;
+    string otrymatyPrizvysche() const {
+        return prizvysche;
+    }
+
+    void info() const {
+        cout << "Prizvysche: " << prizvysche << ", Vik: " << vik << endl;
     }
 };
 
-class Gruponka {
-private:
-    string nazvaGruponky;
-    vector<Studentik> studentikiList;
+class Kolektyv {
+    string nazvaK;
+    Uchennyk* uchni;
+    int kilkist;
+    int rezerv;
+
+    void rozshirennia() {
+        rezerv *= 2;
+        Uchennyk* novyi = new Uchennyk[rezerv];
+        for (int i = 0; i < kilkist; i++) {
+            novyi[i] = uchni[i];
+        }
+        delete[] uchni;
+        uchni = novyi;
+    }
 
 public:
-    Gruponka(string nazva) {
-        nazvaGruponky = nazva;
+    Kolektyv(string nazva = "Bezimennyi") {
+        nazvaK = nazva;
+        rezerv = 2;
+        kilkist = 0;
+        uchni = new Uchennyk[rezerv];
     }
 
-    void dobavStudentika(const Studentik& s) {
-        studentikiList.push_back(s);
+    ~Kolektyv() {
+        delete[] uchni;
     }
 
-    void vykinStudentika(string imya) {
-        for (auto it = studentikiList.begin(); it != studentikiList.end(); ++it) {
-            if (it->viddyImya() == imya) {
-                studentikiList.erase(it);
-                return;
+    void dodaty(const Uchennyk& u) {
+        if (kilkist >= rezerv) rozshirennia();
+        uchni[kilkist++] = u;
+    }
+
+    void vydalyty(string pr) {
+        for (int i = 0; i < kilkist; i++) {
+            if (uchni[i].otrymatyPrizvysche() == pr) {
+                for (int j = i; j < kilkist - 1; j++) {
+                    uchni[j] = uchni[j + 1];
+                }
+                kilkist--;
+                break;
             }
         }
     }
 
-    void pokazhiVsikh() const {
-        cout << "Gruponka: " << nazvaGruponky << endl;
-        for (const auto& s : studentikiList) {
-            s.pokazhiSebya();
+    void spysok() const {
+        cout << "Skad Kolektyvu \"" << nazvaK << "\":" << endl;
+        for (int i = 0; i < kilkist; i++) {
+            uchni[i].info();
         }
     }
 };
 
-void menu() {
-    cout << "\n1. Nova Gruponka\n";
-    cout << "2. Dodaty Studentika\n";
-    cout << "3. Vydalyty Studentika\n";
-    cout << "4. Pokazaty Usikh\n";
-    cout << "5. Vykhid\n";
-    cout << "Vash vibor: ";
-}
-
 int main() {
-    Gruponka* moyaGruponka = nullptr;
-    int vybir;
-    string tempImya;
-    int tempRik;
+    Kolektyv* klasa = nullptr;
+    int komanda;
+    string tekst;
+    int chislo;
 
     do {
-        menu();
-        cin >> vybir;
+        cout << "\n1 - Nova grupa\n2 - Dodaty\n3 - Vydalyty\n4 - Spysok\n0 - Vykhid\nObery: ";
+        cin >> komanda;
         cin.ignore();
 
-        switch (vybir) {
-            case 1:
-                cout << "Nazva Gruponky: ";
-                getline(cin, tempImya);
-                delete moyaGruponka;
-                moyaGruponka = new Gruponka(tempImya);
-                break;
-
-            case 2:
-                if (moyaGruponka == nullptr) break;
-                cout << "Imya Studentika: ";
-                getline(cin, tempImya);
-                cout << "Vik: ";
-                cin >> tempRik;
-                cin.ignore();
-                moyaGruponka->dobavStudentika(Studentik(tempImya, tempRik));
-                break;
-
-            case 3:
-                if (moyaGruponka == nullptr) break;
-                cout << "Imya dlya vydalennya: ";
-                getline(cin, tempImya);
-                moyaGruponka->vykinStudentika(tempImya);
-                break;
-
-            case 4:
-                if (moyaGruponka == nullptr) break;
-                moyaGruponka->pokazhiVsikh();
-                break;
-
-            case 5:
-                break;
-
-            default:
-                break;
+        if (komanda == 1) {
+            cout << "Nazva: ";
+            getline(cin, tekst);
+            delete klasa;
+            klasa = new Kolektyv(tekst);
+        } else if (komanda == 2 && klasa) {
+            cout << "Prizvysche: ";
+            getline(cin, tekst);
+            cout << "Vik: ";
+            cin >> chislo;
+            cin.ignore();
+            klasa->dodaty(Uchennyk(tekst, chislo));
+        } else if (komanda == 3 && klasa) {
+            cout << "Prizvysche dlya vydalennia: ";
+            getline(cin, tekst);
+            klasa->vydalyty(tekst);
+        } else if (komanda == 4 && klasa) {
+            klasa->spysok();
         }
 
-    } while (vybir != 5);
+    } while (komanda != 0);
 
-    delete moyaGruponka;
+    delete klasa;
     return 0;
 }
