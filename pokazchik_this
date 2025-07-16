@@ -1,0 +1,145 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+class Lyudyna {
+    char* pib;
+
+public:
+    Lyudyna() {
+        pib = new char[1];
+        pib[0] = '\0';
+    }
+
+    Lyudyna(const char* imya) {
+        pib = new char[strlen(imya) + 1];
+        strcpy(pib, imya);
+    }
+
+    Lyudyna(const Lyudyna& l) {
+        pib = new char[strlen(l.pib) + 1];
+        strcpy(pib, l.pib);
+    }
+
+    Lyudyna& operator=(const Lyudyna& l) {
+        if (this != &l) {
+            delete[] pib;
+            pib = new char[strlen(l.pib) + 1];
+            strcpy(pib, l.pib);
+        }
+        return *this;
+    }
+
+    ~Lyudyna() {
+        delete[] pib;
+    }
+
+    void pokazaty() const {
+        cout << pib;
+    }
+};
+
+class Kvartyra {
+    Lyudyna* meshkanci;
+    int kilkist;
+
+public:
+    Kvartyra(int k = 0) {
+        kilkist = k;
+        if (k > 0)
+            meshkanci = new Lyudyna[k];
+        else
+            meshkanci = nullptr;
+    }
+
+    Kvartyra(const Kvartyra& k) {
+        kilkist = k.kilkist;
+        meshkanci = new Lyudyna[kilkist];
+        for (int i = 0; i < kilkist; i++) {
+            meshkanci[i] = k.meshkanci[i];
+        }
+    }
+
+    Kvartyra& operator=(const Kvartyra& k) {
+        if (this != &k) {
+            delete[] meshkanci;
+            kilkist = k.kilkist;
+            meshkanci = new Lyudyna[kilkist];
+            for (int i = 0; i < kilkist; i++) {
+                meshkanci[i] = k.meshkanci[i];
+            }
+        }
+        return *this;
+    }
+
+    ~Kvartyra() {
+        delete[] meshkanci;
+    }
+
+    void zapovnennya() {
+        for (int i = 0; i < kilkist; i++) {
+            char imya[100];
+            cout << "Vvedit PIB meshkantsya #" << (i + 1) << ": ";
+            cin.ignore();
+            cin.getline(imya, 100);
+            meshkanci[i] = Lyudyna(imya);
+        }
+    }
+
+    void pokazaty() const {
+        for (int i = 0; i < kilkist; i++) {
+            cout << "- ";
+            meshkanci[i].pokazaty();
+            cout << endl;
+        }
+    }
+};
+
+class Dim {
+    Kvartyra* kvartyr;
+    int kilkistKvartyr;
+
+public:
+    Dim(int k = 0) {
+        kilkistKvartyr = k;
+        if (k > 0)
+            kvartyr = new Kvartyra[k];
+        else
+            kvartyr = nullptr;
+    }
+
+    ~Dim() {
+        delete[] kvartyr;
+    }
+
+    void zapovnennya() {
+        for (int i = 0; i < kilkistKvartyr; i++) {
+            int k;
+            cout << "Kvartyra #" << (i + 1) << ": sk. meshkantsiv? ";
+            cin >> k;
+            kvartyr[i] = Kvartyra(k);
+            kvartyr[i].zapovnennya();
+        }
+    }
+
+    void pokazaty() const {
+        for (int i = 0; i < kilkistKvartyr; i++) {
+            cout << "\nKvartyra #" << (i + 1) << ":\n";
+            kvartyr[i].pokazaty();
+        }
+    }
+};
+
+int main() {
+    int k;
+    cout << "Vvedit kilkist kvartyr v budynku: ";
+    cin >> k;
+
+    Dim budynok(k);
+    budynok.zapovnennya();
+
+    cout << "\n*** INFORMACIYA PRO BUDYNOK ***\n";
+    budynok.pokazaty();
+
+    return 0;
+}
